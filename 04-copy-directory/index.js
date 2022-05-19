@@ -8,6 +8,7 @@ const originalFolderPath = path.join(__dirname, originalFolderName);
 
 (async function copyDir() {
   try {
+    await fs.rm(folderCopyPath, { recursive: true, force: true });
     await fs.mkdir(folderCopyPath, { recursive: true });
     const files = await fs.readdir(originalFolderPath);
     for (let file of files) {
