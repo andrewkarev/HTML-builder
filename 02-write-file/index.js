@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { stdin: input, stdout: output } = require('process');
-const readline = require('readline/promises');
+const readline = require('readline');
 
 const fileName = 'text.txt';
 const filePath = path.join(__dirname, fileName);
