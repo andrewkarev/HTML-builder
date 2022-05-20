@@ -12,6 +12,10 @@ const outputStylesFileName = 'style.css';
 const sourceStylesFolderPath = path.join(__dirname, stylesFolderName);
 const outputStylesFilePath = path.join(projectFolderPath, outputStylesFileName);
 
+const assetsFolderName = 'assets';
+const assetsFolderPath = path.join(__dirname, assetsFolderName);
+const assetsFolderCopyPath = path.join(projectFolderPath, assetsFolderName);
+
 async function bundleStyles() {
   const writableStream = fs.createWriteStream(outputStylesFilePath);
   const files = await fsPromises.readdir(sourceStylesFolderPath, { withFileTypes: true });
@@ -25,11 +29,27 @@ async function bundleStyles() {
   }
 }
 
+async function copyAssetsFolder(originalFilePath, copyFilePath) {
+  await fsPromises.rm(copyFilePath, { recursive: true, force: true });
+  await fsPromises.mkdir(copyFilePath, { recursive: true });
+  const files = await fsPromises.readdir(originalFilePath, { withFileTypes: true });
+  for (let file of files) {
+    const source = path.join(originalFilePath, file.name);
+    const destination = path.join(copyFilePath, file.name);
+    if (file.isFile()) {
+      await fsPromises.copyFile(source, destination);
+    } else {
+      await copyAssetsFolder(source, destination);
+    }
+  }
+}
+
 (async () => {
   try {
     await fsPromises.rm(projectFolderPath, { recursive: true, force: true });
     await fsPromises.mkdir(projectFolderPath, { recursive: true });
     await bundleStyles();
+    await copyAssetsFolder(assetsFolderPath, assetsFolderCopyPath);
   } catch (err) {
     console.log(`Error: ${err.message}`);
   }
