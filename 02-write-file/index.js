@@ -22,3 +22,5 @@ rl.on('line' || 'SIGINT', (input) => {
     return rl.close();
   }
 });
+
+rl.on('error', (err) => console.log(`Error: ${err.message}`));
