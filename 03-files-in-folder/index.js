@@ -9,14 +9,15 @@ const folderPath = path.join(__dirname, folderName);
     const files = await fs.readdir(folderPath, { withFileTypes: true });
     for (const file of files) {
       if (file.isFile()) {
-        const fileName = path.basename(file.name);
-        const fileSize = await (await fs.stat(path.join(folderPath, fileName))).size;
-        const output = fileName.split('.').join(' - ');
+        const filePath = path.join(folderPath, file.name);
+        const fileName = path.parse(filePath).name;
+        const fileExtension = path.extname(filePath).slice(1);
+        const fileSize = (await fs.stat(filePath)).size;
 
-        console.log(`${output} - ${fileSize / 1024}kb`);
+        console.log(`${fileName} - ${fileExtension} - ${fileSize / 1024}kb`);
       }
     }
   } catch (err) {
-    console.error(err);
+    console.log(`Error: ${err.message}`);
   }
 })();
