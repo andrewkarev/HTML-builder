@@ -16,6 +16,13 @@ const assetsFolderName = 'assets';
 const assetsFolderPath = path.join(__dirname, assetsFolderName);
 const assetsFolderCopyPath = path.join(projectFolderPath, assetsFolderName);
 
+const componentsFolderName = 'components';
+const htmlFileName = 'template.html';
+const htmlFilecopyName = 'index.html';
+const componentsFolderPath = path.join(__dirname, componentsFolderName);
+const htmlFilePath = path.join(__dirname, htmlFileName);
+const htmlFileCopyPath = path.join(projectFolderPath, htmlFilecopyName);
+
 async function bundleStyles() {
   const writableStream = fs.createWriteStream(outputStylesFilePath);
   const files = await fsPromises.readdir(sourceStylesFolderPath, { withFileTypes: true });
@@ -44,12 +51,31 @@ async function copyAssetsFolder(originalFilePath, copyFilePath) {
   }
 }
 
+async function completeHtml() {
+  await fsPromises.copyFile(htmlFilePath, htmlFileCopyPath);
+  let htmlFileContent = await fsPromises.readFile(htmlFileCopyPath, charset);
+  const writableStream = fs.createWriteStream(htmlFileCopyPath);
+  const files = await fsPromises.readdir(componentsFolderPath, { withFileTypes: true });
+  for (const file of files) {
+    const sourceFilePath = path.join(componentsFolderPath, file.name);
+    const sourceFileExtension = path.extname(sourceFilePath);
+    if (file.isFile() && sourceFileExtension === '.html') {
+      const sourceFileName = path.parse(sourceFilePath).name;
+      const htmlFileComponentContent = await fsPromises.readFile(sourceFilePath, charset);
+      const substitude = `{{${sourceFileName}}}`;
+      htmlFileContent = htmlFileContent.replace(substitude, htmlFileComponentContent);
+    }
+  }
+  writableStream.write(htmlFileContent);
+}
+
 (async () => {
   try {
     await fsPromises.rm(projectFolderPath, { recursive: true, force: true });
     await fsPromises.mkdir(projectFolderPath, { recursive: true });
     await bundleStyles();
     await copyAssetsFolder(assetsFolderPath, assetsFolderCopyPath);
+    await completeHtml();
   } catch (err) {
     console.log(`Error: ${err.message}`);
   }
