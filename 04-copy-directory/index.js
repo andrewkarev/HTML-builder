@@ -18,6 +18,6 @@ const originalFolderPath = path.join(__dirname, originalFolderName);
     }
     console.log('Folder has been copied.');
   } catch (err) {
-    console.error(err);
+    console.log(`Error: ${err.message}`);
   }
 })();
