@@ -5,12 +5,10 @@ const fileName = 'text.txt';
 const filePath = path.join(__dirname, fileName);
 const charset = 'utf-8';
 
-let readableStream = new fs.createReadStream(filePath, charset);
+const readableStream = fs.createReadStream(filePath, charset);
 
-readableStream.on('data', function (chunk) {
-  console.log(chunk);
-});
+let data = '';
 
-readableStream.on('error', function (err) {
-  console.log(err);
-});
+readableStream.on('data', (chunk) => data += chunk);
+readableStream.on('end', () => console.log(data));
+readableStream.on('error', (err) => console.log(`Error: ${err.message}`));
