@@ -30,8 +30,9 @@ async function bundleStyles() {
     const sourceFilePath = path.join(sourceStylesFolderPath, file.name);
     const sourceFileExtension = path.extname(sourceFilePath);
     if (file.isFile() && sourceFileExtension === '.css') {
-      const readableStream = fs.createReadStream(sourceFilePath, charset);
-      readableStream.pipe(writableStream);
+      let styleFileContent = await fsPromises.readFile(sourceFilePath, charset);
+      styleFileContent = `${styleFileContent.trim()}\n\n`;
+      writableStream.write(styleFileContent);
     }
   }
 }

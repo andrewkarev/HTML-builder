@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { readdir } = require('fs/promises');
+const { readdir, readFile } = require('fs/promises');
 const path = require('path');
 
 const sourceFolderName = 'styles';
@@ -17,8 +17,9 @@ const outputFilePath = path.join(__dirname, outputFolderName, outputFileName);
       const sourceFilePath = path.join(sourceFolderPath, file.name);
       const sourceFileExtension = path.extname(sourceFilePath);
       if (file.isFile() && sourceFileExtension === '.css') {
-        const readableStream = fs.createReadStream(sourceFilePath, charset);
-        readableStream.pipe(writableStream);
+        let styleFileContent = await readFile(sourceFilePath, charset);
+        styleFileContent = `${styleFileContent.trim()}\n\n`;
+        writableStream.write(styleFileContent);
       }
     }
     console.log('Bundling is finished!');
