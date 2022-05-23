@@ -77,6 +77,7 @@ async function completeHtml() {
     await bundleStyles();
     await copyAssetsFolder(assetsFolderPath, assetsFolderCopyPath);
     await completeHtml();
+    console.log('Project is built successfully');
   } catch (err) {
     console.log(`Error: ${err.message}`);
   }
